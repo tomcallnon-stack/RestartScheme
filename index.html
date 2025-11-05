@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Welcome to the Restart Hub</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --pink: #e91e63;
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+      --radius: 12px;
+      --maxw: 1200px;
+      --shadow-1: 0 8px 30px rgba(16,24,40,0.06);
+      --accent-dark: #b0003a;
+      --gap: 20px;
+      --logo-h: 108px;
+      --avatar-size-desktop: 150px;
+      --avatar-size-mobile: 110px;
+      --job-card-width: 380px;
+      --job-card-height: 210px;
+      --carousel-gap: 18px;
+      --arrow-offset: 46px;
+      --search-height-desktop: 64px;
+      --search-height-mobile: 52px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #fbfbfe 0%, var(--bg) 100%);
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding-bottom:64px;
+    }
+
+    .corner-logo{ position:fixed; top:18px; width:auto; height:var(--logo-h); z-index:1200; pointer-events:none; opacity:0.98; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .corner-logo.left{ left:18px }
+    .corner-logo.right{ right:18px }
+    .corner-logo img{ height:var(--logo-h); width:auto; display:block; object-fit:contain; }
+    .logo-fallback { display:none; color:var(--pink); font-weight:900; font-size:1rem; letter-spacing: -0.2px; white-space:nowrap; }
+
+    .site { max-width: var(--maxw); margin: 0 auto; padding: 26px var(--gap) 48px; }
+
+    .mobile-logos{ display:none; max-width:920px; margin: 8px auto 0; justify-content:center; gap:12px; align-items:center; }
+    .mobile-logos .logo-wrap{ display:inline-flex; align-items:center; gap:8px; }
+    .mobile-logos img{ height:40px; width:auto; display:block; }
+    .mobile-logos .logo-fallback { display:none; color:var(--pink); font-weight:900; font-size:0.95rem; }
+
+    header.hero { background: linear-gradient(90deg, rgba(233,30,99,0.06), rgba(233,30,99,0.02)); border-radius: calc(var(--radius) + 6px); padding: 36px 28px; box-shadow: var(--shadow-1); display:flex; align-items:center; justify-content:center; text-align:center; position:relative; margin-bottom:8px; }
+    header.hero h1{ margin:0; font-size: clamp(1.6rem, 2.6vw, 2.4rem); color: var(--pink); font-weight:800; letter-spacing:-0.6px; }
+
+    .welcome-note{ max-width:920px; margin: 20px auto 56px; color:var(--pink); text-align:center; font-size:1.14rem; font-weight:700; line-height:1.6; display:flex; flex-direction:column; gap:12px; padding:0 12px; }
+    .welcome-note .signature{ margin-top:6px; font-weight:700; color:var(--pink); font-size:1.02rem; line-height:1.4; }
+
+    .section { margin-bottom: 28px; }
+
+    .search-carousel-panel { } /* mobile styling below */
+
+    .search-helper { max-width:920px; margin: 8px auto 6px; font-size:0.95rem; color:var(--muted); text-align:center; }
+
+    .search-wrap{ display:flex; align-items:center; justify-content:center; gap:12px; margin: 6px auto 12px; max-width:920px; }
+    .search-input{ flex:1 1 480px; height:var(--search-height-desktop); padding:14px 18px; border-radius:12px; border:1px solid #e8e8ef; background:#fff; font-size:1rem; box-shadow: 0 6px 18px rgba(16,24,40,0.03) inset; }
+    .search-btn{ height:var(--search-height-desktop); border-radius:12px; border:none; background:var(--pink); color:#fff; padding: 0 18px; font-weight:800; cursor:pointer; box-shadow: 0 8px 26px rgba(233,30,99,0.12); }
+
+    .carousel-section { position: relative; margin-top: 10px; }
+    .carousel-inner { position: relative; margin: 0 auto; max-width: calc((var(--job-card-width) * 3) + (var(--carousel-gap) * 2)); display: flex; align-items: center; justify-content: center; }
+    #jobs-carousel{ display:flex; gap:var(--carousel-gap); overflow:hidden; align-items:stretch; padding: 10px 6px; justify-content:center; width:100%; box-sizing: border-box; }
+
+    .job-card{ background:var(--card); border-radius:12px; border:1px solid rgba(233,30,99,0.08); width:var(--job-card-width); height:var(--job-card-height); padding:16px; box-shadow: 0 10px 30px rgba(16,24,40,0.04); display:flex; flex-direction:column; gap:8px; transition: transform 180ms ease, box-shadow 180ms ease; flex-shrink:0; align-items:center; justify-content:center; text-align:center; }
+    .job-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(16,24,40,0.08); border-color:var(--accent-dark); }
+    .job-title{ color:var(--pink); font-weight:800; font-size:1.02rem; margin:0; white-space:normal; overflow:visible; }
+    .job-meta{ font-weight:700; color:#444; font-size:0.95rem; display:flex; gap:8px; align-items:center; justify-content:center; }
+    .job-pay{ color:var(--pink); font-weight:800; font-size:0.98rem }
+    .job-location{ color:var(--muted); font-weight:600; font-size:0.92rem }
+    .job-desc{ color:#444; font-size:0.92rem; line-height: 1.22; overflow:hidden; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; text-overflow:ellipsis; text-align:center; }
+
+    .carousel-inner .carousel-arrow{ position:absolute; top:50%; transform:translateY(-50%); width:56px; height:56px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:rgba(16,24,40,0.12); border:none; cursor:pointer; transition:transform 140ms; z-index:9999; box-shadow: 0 8px 30px rgba(0,0,0,0.12); backdrop-filter: blur(6px); }
+    .carousel-inner .carousel-arrow svg{width:22px;height:22px;fill:#fff}
+    .carousel-inner .carousel-prev{ left: calc(-1 * var(--arrow-offset)); }
+    .carousel-inner .carousel-next{ right: calc(-1 * var(--arrow-offset)); }
+    .carousel-inner .carousel-arrow:active { transform: translateY(-50%) scale(0.98); }
+
+    .avatars-area{ display:flex; justify-content:center; gap:20px; align-items:flex-start; margin-top:20px; position:relative; }
+    .avatars-wrapper{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:18px; max-width:920px; width:100%; justify-items:center; align-items:start; }
+
+    .pic-box{ background:var(--card); border-radius:12px; padding:12px; width:100%; max-width:320px; box-shadow: 0 8px 30px rgba(16,24,40,0.04); display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; border:1px solid rgba(16,24,40,0.03); transition:transform 220ms, box-shadow 220ms; cursor:pointer; min-height: 0; }
+    .pic-box img{ width: var(--avatar-size-desktop); height: var(--avatar-size-desktop); border-radius:12px; object-fit:contain; background: linear-gradient(180deg,#fff,#fff); padding:8px; box-shadow: 0 12px 30px rgba(16,24,40,0.06); transition: transform 220ms ease; }
+    .pic-box:active img,.pic-box:focus img{ transform: scale(1.03); }
+    .pic-caption{ color:var(--pink); font-weight:800; font-size:1.08rem; }
+
+    .center-row{ grid-column: 1 / -1; display:flex; justify-content:center; gap:18px; width:100% }
+
+    .team-heading{ text-align:center; color:var(--pink); font-weight:900; font-size: clamp(1.9rem, 3.0vw, 2.2rem); margin: 18px 0 6px; }
+    .coach-subheading{ text-align:center; color:var(--pink); font-weight:900; font-size:1.6rem; margin: 0 0 12px; }
+
+    .useful-links-heading{ text-align:center; font-weight:900; margin-top:22px; margin-bottom:14px; font-size:1.6rem; color:var(--pink); }
+
+    .action-row{ display:flex; gap:18px; max-width:1100px; margin:0 auto; padding: 6px; }
+    .action-row.downloads{ display:flex; gap:18px; max-width:1100px; margin:0 auto; padding:6px; }
+
+    .action-btn{ flex:1 1 0; background:var(--pink); color:#fff; border-radius:14px; padding:18px 24px; border:none; font-weight:900; font-size:1.12rem; line-height:1.08; box-shadow: 0 12px 30px rgba(233,30,99,0.12); cursor:pointer; text-align:center; text-decoration: underline; text-underline-offset: 8px; text-decoration-color: rgba(255,255,255,0.95); min-height:74px; display:flex; align-items:center; justify-content:center; white-space:normal; }
+    #action-finances { font-size:1.12rem; font-weight:900; }
+    .action-btn a{ color:inherit; text-decoration:inherit; display:flex; align-items:center; justify-content:center; width:100%; height:100% }
+
+    @media (max-width:920px){
+      .mobile-logos{ display:flex; }
+      .search-input{ height:var(--search-height-mobile); padding:12px 16px; }
+      .search-btn{ height:var(--search-height-mobile); }
+      .corner-logo{ display:none }
+      .carousel-inner .carousel-arrow{ display:none }
+      .search-wrap{ padding:0 18px }
+
+      .search-carousel-panel { background: rgba(255,255,255,0.72); border-radius: 14px; padding: 12px; margin: 0 12px 18px; box-shadow: 0 10px 30px rgba(16,24,40,0.06); border: 1px solid rgba(16,24,40,0.04); }
+
+      .action-row, .action-row.downloads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width:920px; margin: 0 auto; }
+      .action-row .action-btn, .action-row.downloads .action-btn { text-decoration: none !important; align-items: center; justify-content: center; height: 76px; min-height: 76px; padding: 12px 14px; }
+
+      .avatars-wrapper{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:14px; }
+      .avatars-wrapper .pic-box{ min-height: 210px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px; }
+      .avatars-wrapper .pic-box img{ width: var(--avatar-size-mobile); height: var(--avatar-size-mobile); object-fit:cover; border-radius:10px; }
+      .pic-caption{ font-size:1.02rem; }
+
+      .job-card{ width:86vw; }
+      .action-btn{ font-size:1.03rem; }
+    }
+
+    @media (max-width:560px){
+      .job-card{ width:92vw; height:auto; min-height:170px }
+      .action-row{ gap:12px }
+    }
+
+    .modal-overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:20px; background: rgba(8,12,20,0.45); z-index:1500; }
+    .modal-overlay.open{ display:flex }
+    .modal{ width:100%; max-width:780px; background:var(--card); border-radius:14px; padding:20px; box-shadow:0 20px 60px rgba(16,24,40,0.35); }
+    .modal .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+    .modal h3{ margin:0; font-size:1.15rem; color:var(--pink); font-weight:800 }
+    .modal .modal-body{ margin-top:12px; color:#333; font-size:1.08rem; line-height:1.36; display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    #coachRole{ font-size:1.08rem; font-weight:800; color:#222; margin-bottom:8px; }
+    #coachEmail, #coachPhone{ font-size:1.08rem; color:#222; margin:6px 0; font-weight:800; }
+    #coachQuote{ font-size:0.95rem; color:#444; font-style:italic; margin-top:10px; font-weight:600; }
+
+    .modal .modal-actions{ display:flex; gap:12px; justify-content:flex-end; margin-top:16px }
+    .finance-proceed{ background:#0aa07a; color:#fff; padding:12px 18px; border-radius:12px; font-weight:900; border:none; font-size:1rem; box-shadow: 0 12px 30px rgba(10,160,122,0.12); cursor:pointer; }
+    .finance-dismiss{ background:transparent; border-radius:12px; padding:10px 14px; border:1px solid #ddd; cursor:pointer }
+
+    .search-list{ max-height:60vh; overflow:auto; margin:12px 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px }
+    .search-item{ background:#fff; border-radius:10px; padding:12px; box-shadow: 0 8px 24px rgba(16,24,40,0.04); border:1px solid #f0f0f3 }
+    .search-item .s-title{ font-weight:800; color:var(--pink) }
+    .search-meta{ color:var(--muted); font-weight:700; margin-top:6px; font-size:0.95rem }
+  </style>
+</head>
+<body>
+  <span class="corner-logo left" aria-hidden="false" title="PET‑Xi">
+    <img src="PET-Xi-Logo.png" alt="PET‑Xi logo"
+         onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='inline-block';"
+         onload="this.style.display='block'; this.parentElement.querySelector('.logo-fallback').style.display='none';">
+    <span class="logo-fallback" aria-hidden="true">PET‑Xi</span>
+  </span>
+
+  <span class="corner-logo right" aria-hidden="false" title="Restart">
+    <img src="Restart-Logo.png" alt="Restart logo"
+         onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='inline-block';"
+         onload="this.style.display='block'; this.parentElement.querySelector('.logo-fallback').style.display='none';">
+    <span class="logo-fallback" aria-hidden="true">Restart</span>
+  </span>
+
+  <div class="site">
+    <header class="hero" role="banner">
+      <div>
+        <h1>Welcome to the Restart Hub</h1>
+      </div>
+    </header>
+
+    <div class="welcome-note" aria-live="polite">
+      <div>We’re glad you’re here. This Hub gives you quick access to your coaches’ details, live job searches, and useful resources to support your journey into work.</div>
+      <div>If there’s anything you’d like to see added, just let your Work Coach know — we’re always open to ideas.</div>
+      <div class="signature">The Restart Team<br>(Tom, Kevin, Anup &amp; Yannick)</div>
+    </div>
+
+    <div class="search-carousel-panel">
+      <div class="search-helper">Please input a keyword to search for roles in Leamington Spa. EG: Retail or Hospitality</div>
+
+      <section class="section">
+        <div class="search-wrap" role="search">
+          <input id="jobSearchInput" class="search-input" placeholder="Search a Job Title" aria-label="Search a Job Title">
+          <button id="jobSearchBtn" class="search-btn" aria-label="Search jobs">Search</button>
+        </div>
+      </section>
+
+      <section class="section carousel-section" aria-label="Latest jobs">
+        <div class="carousel-inner">
+          <button class="carousel-arrow carousel-prev" id="carouselPrev" aria-hidden="false" title="Previous">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
+          </button>
+
+          <div id="jobs-carousel" aria-live="polite" aria-atomic="true"></div>
+
+          <button class="carousel-arrow carousel-next" id="carouselNext" aria-hidden="false" title="Next">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"></path></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="team-heading">The Team</div>
+    <div class="coach-subheading">Please Click A Coach For Contact Details.</div>
+
+    <section class="section">
+      <div class="avatars-area" aria-label="Coaches">
+        <div class="avatars-wrapper" role="list">
+          <div class="pic-box" role="listitem" tabindex="0" data-coach="anup">
+            <img src="Pic 1.png" alt="Anup">
+            <div class="pic-caption">Anup — Coach</div>
+          </div>
+
+          <div class="pic-box" role="listitem" tabindex="0" data-coach="kevin">
+            <img src="Pic 2.png" alt="Kevin">
+            <div class="pic-caption">Kevin — Coach</div>
+          </div>
+
+          <div class="pic-box" role="listitem" tabindex="0" data-coach="yannick">
+            <img src="Pic 3.png" alt="Yannick">
+            <div class="pic-caption">Yannick — Coach</div>
+          </div>
+
+          <div class="center-row" role="presentation">
+            <div class="pic-box" role="listitem" tabindex="0" data-coach="tom">
+              <img src="Pic 4.png" alt="Tom">
+              <div class="pic-caption">Tom — Team Leader</div>
+            </div>
+
+            <div class="pic-box" role="listitem" tabindex="0" data-coach="dean">
+              <img src="Pic 5.png" alt="Dean">
+              <div class="pic-caption">Dean — Contract Manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="useful-links-heading">Useful Links</div>
+
+    <section class="section">
+      <div class="action-row" role="group" aria-label="Useful Links Primary">
+        <button id="action-finances" class="action-btn" type="button">Understand your finances</button>
+        <a id="action-courses" class="action-btn" href="#" role="button">Courses</a>
+        <a id="action-mental" class="action-btn" href="mailto:tcallnon@pet-xi.co.uk" role="button">Mental Health Support</a>
+      </div>
+
+      <div class="action-row downloads" role="group" aria-label="Useful Links Downloads" style="margin-top:12px;">
+        <a class="action-btn" href="Create A Cover Letter.pdf" download="Create A Cover Letter.pdf" role="button">Create A Cover Letter</a>
+        <a class="action-btn" href="Create A CV.pdf" download="Create A CV.pdf" role="button">Create A CV</a>
+        <a class="action-btn" href="Skills Assessment.pdf" download="Skills Assessment.pdf" role="button">Skills Assessment</a>
+      </div>
+    </section>
+
+    <div id="loading-msg" style="text-align:center;color:#888;margin-top:20px">Loading jobs…</div>
+  </div>
+
+  <!-- Coach contact modal -->
+  <div id="coachModalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="coachModalTitle">
+      <div class="modal-header">
+        <h3 id="coachModalTitle">Coach</h3>
+        <button id="modalCloseBtn" aria-label="Close" style="background:transparent;border:none;font-size:20px;cursor:pointer">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="coachImage" src="" alt="" style="width:140px;height:140px;object-fit:contain;border-radius:10px">
+        <div style="flex:1 1 0;min-width:0;text-align:left">
+          <div id="coachRole"></div>
+          <div id="coachEmail"></div>
+          <div id="coachPhone"></div>
+          <div id="coachQuote"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="modalCloseSecondary" class="btn secondary">Close</button>
+        <a id="callLink" class="btn secondary" style="display:none">Call</a>
+        <a id="contactEmailLink" class="btn" href="#" target="_blank" rel="noopener">Email</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finance modal -->
+  <div id="financeModalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="financeModalTitle">
+      <div class="modal-header">
+        <h3 id="financeModalTitle">Understand Your Finances</h3>
+        <button id="financeModalClose" aria-label="Close" style="background:transparent;border:none;font-size:20px;cursor:pointer">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-weight:800; font-size:1.05rem; margin-bottom:10px">See how much better off you’ll be in work!</p>
+        <p style="margin:0 0 12px">Enter your new hours to check your entitlements, then save the PDF to review with your coach in your next session.</p>
+        <p style="margin:0 0 18px;color:var(--muted)">Click Proceed to open the EntitledTo calculator.</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="financeProceed" class="finance-proceed" type="button">Proceed Now — Check Your Entitlements</button>
+          <button id="financeDismiss" class="finance-dismiss" type="button">Dismiss</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search results modal -->
+  <div id="searchModalOverlay" class="modal-overlay search-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="searchModalTitle">
+      <div class="modal-header">
+        <h3 id="searchModalTitle">Search results</h3>
+        <button id="searchModalClose" aria-label="Close" style="background:transparent;border:none;font-size:18px;cursor:pointer">&times;</button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>Results for: <strong id="searchTerm" style="color:#222"></strong></div>
+        <div id="searchCount" style="color:var(--muted);font-weight:700">0 results</div>
+      </div>
+
+      <ul id="searchResultsList" class="search-list" aria-live="polite"></ul>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button id="searchCloseBtn" class="btn secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // Config
+      const API_BASE = "https://api.adzuna.com/v1/api/jobs/gb/search/1";
+      const API_PARAMS = {
+        app_id: "977cbeaf",
+        app_key: "5b2f157f0524a824825278de0506f4c4",
+        where: "Leamington Spa",
+        results_per_page: 25,
+        "content-type": "application/json",
+        max_days_old: 7,
+        salary_max: 60000
+      };
+
+      const JOBS_PER_VIEW_DESKTOP = 3;
+      const CAROUSEL_INTERVAL_DESKTOP = 10000;
+      const JOBS_PER_VIEW_MOBILE = 1;
+      const CAROUSEL_INTERVAL_MOBILE = 3000;
+      const MAX_JOBS = 25;
+      const FETCH_RETRIES = 2; // number of retries before fallback
+
+      // Elements and state
+      const jobsCarousel = document.getElementById('jobs-carousel');
+      const loadingMsg = document.getElementById('loading-msg');
+      const prevBtn = document.getElementById('carouselPrev');
+      const nextBtn = document.getElementById('carouselNext');
+
+      const jobSearchInput = document.getElementById('jobSearchInput');
+      const jobSearchBtn = document.getElementById('jobSearchBtn');
+
+      const coachModalOverlay = document.getElementById('coachModalOverlay');
+      const modalTitle = document.getElementById('coachModalTitle');
+      const coachImage = document.getElementById('coachImage');
+      const coachRole = document.getElementById('coachRole');
+      const coachEmail = document.getElementById('coachEmail');
+      const coachPhone = document.getElementById('coachPhone');
+      const coachQuote = document.getElementById('coachQuote');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+      const modalCloseSecondary = document.getElementById('modalCloseSecondary');
+      const contactEmailLink = document.getElementById('contactEmailLink');
+      const callLink = document.getElementById('callLink');
+
+      const financeModalOverlay = document.getElementById('financeModalOverlay');
+      const financeProceed = document.getElementById('financeProceed');
+      const financeDismiss = document.getElementById('financeDismiss');
+      const financeModalClose = document.getElementById('financeModalClose');
+      const financeUrl = "https://akg.entitledto.co.uk/Intro/Home?cid=d6708c49-859c-4102-b63d-ada3e3194e71";
+
+      const searchModalOverlay = document.getElementById('searchModalOverlay');
+      const searchResultsList = document.getElementById('searchResultsList');
+      const searchModalClose = document.getElementById('searchModalClose');
+      const searchCloseBtn = document.getElementById('searchCloseBtn');
+      const searchTermLabel = document.getElementById('searchTerm');
+      const searchCountLabel = document.getElementById('searchCount');
+
+      // Coaches data
+      const coaches = {
+        anup:{ name:"Anup", role:"Work Coach", email:"alally@pet-xi.co.uk", phone:"07485352831", quote:"I’m here to help you find the right role — tell me what you enjoy and we’ll make a plan.", img:"Pic 1.png"},
+        kevin:{ name:"Kevin", role:"Work Coach", email:"kkyeyune@pet-xi.co.uk", phone:"07485352841", quote:"Small steps every day — I’ll support you through the application and interview process.", img:"Pic 2.png"},
+        yannick:{ name:"Yannick", role:"Work Coach", email:"ygomes@pet-xi.co.uk", phone:"", quote:"Let’s turn your strengths into a CV that stands out.", img:"Pic 3.png"},
+        tom:{ name:"Tom", role:"Team Leader", email:"tcallnon@pet-xi.co.uk", phone:"07880192080", quote:"I’m happy to help with any escalation or personalised support.", img:"Pic 4.png"},
+        dean:{ name:"Dean", role:"Contract Manager", email:"dhatton@pet-xi.co.uk", phone:"", quote:"If you have questions about our services or partnerships, speak to me.", img:"Pic 5.png"}
+      };
+
+      // Fallback example jobs (used when API is down)
+      const FALLBACK_JOBS = [
+        { title: "Customer Service Assistant", company:{display_name:"Local Shop"}, location:{display_name:"Leamington Spa"}, salary_min:20000, salary_max:22000, salary_currency:"£", description:"Assist customers, handle payments and provide friendly service.", redirect_url:"#"},
+        { title: "Kitchen Assistant", company:{display_name:"Town Diner"}, location:{display_name:"Leamington Spa"}, salary_min:18000, salary_max:20000, salary_currency:"£", description:"Support kitchen team with prep, cleaning and basic cook tasks.", redirect_url:"#"},
+        { title: "Retail Stock Operative", company:{display_name:"RetailCo"}, location:{display_name:"Leamington Spa"}, salary_min:19000, salary_max:21000, salary_currency:"£", description:"Receiving stock, shelf replenishment, and basic customer support.", redirect_url:"#"}
+      ];
+
+      // State
+      let jobs = [];
+      let carouselIndex = 0;
+      let carouselTimer = null;
+      let refreshTimer = null;
+      let jobsPerView = JOBS_PER_VIEW_DESKTOP;
+      let carouselInterval = CAROUSEL_INTERVAL_DESKTOP;
+      let lastFocusedElement = null;
+
+      // Utilities
+      function qs(sel){ return document.querySelector(sel); }
+      function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+      function escapeHtml(t){ const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}; return String(t||'').replace(/[&<>"']/g, c=>m[c]); }
+      function formatSalary(min,max,curr){ if(typeof min!=='number' && typeof max!=='number') return 'Salary not listed'; if(typeof min==='number' && typeof max==='number' && min===max) return `${curr}${min.toLocaleString()}`; if(typeof min==='number' && typeof max==='number') return `${curr}${min.toLocaleString()} - ${curr}${max.toLocaleString()}`; if(typeof min==='number') return `From ${curr}${min.toLocaleString()}`; if(typeof max==='number') return `Up to ${curr}${max.toLocaleString()}`; return 'Salary not listed' }
+      function firstSentences(text,lines=3){ if(!text) return ''; text = text.replace(/<\/?[^>]+(>|$)/g,''); const s = text.match(/[^.!?]+[.!?]?/g)||[]; let c = s.slice(0,lines).join(' ').trim(); if(!c && text) c = text.substring(0,120)+'...'; return escapeHtml(c); }
+
+      // Build API URL
+      function buildApiUrl(overrides = {}) {
+        const params = Object.assign({}, API_PARAMS, overrides);
+        const url = new URL(API_BASE);
+        Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+        return url.toString();
+      }
+
+      // Render carousel
+      function renderCarousel(){
+        if(!jobsCarousel) return;
+        jobsCarousel.innerHTML = "";
+        if(!jobs || !jobs.length) {
+          jobsCarousel.innerHTML = '<div style="color:#999">No jobs found.</div>';
+          return;
+        }
+        const total = jobs.length;
+        const toShow = Math.min(jobsPerView, total);
+        for(let i=0;i<toShow;i++){
+          const idx = (carouselIndex + i) % total;
+          const job = jobs[idx];
+          const title = escapeHtml(job.title || 'Untitled Job');
+          const location = escapeHtml(job.location?.display_name || 'Location not listed');
+          const currency = (job.salary_currency || '£').replace('GBP','£').replace('USD','$').replace('EUR','€');
+          const salary = formatSalary(job.salary_min, job.salary_max, currency);
+          const description = firstSentences(job.description, 4);
+          const link = job.redirect_url || '#';
+
+          const card = document.createElement('div');
+          card.className = 'job-card';
+          card.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center">
+              <div class="job-title"><a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${title}</a></div>
+              <div class="job-meta"><div class="job-pay">${salary}</div><div style="flex:0.02"></div><div class="job-location">${location}</div></div>
+            </div>
+            <div class="job-desc">${description}</div>`;
+          jobsCarousel.appendChild(card);
+        }
+      }
+
+      // Carousel controls
+      function nextJobs(){ if(!jobs.length) return; carouselIndex = (carouselIndex + jobsPerView) % jobs.length; renderCarousel(); restartCarouselTimer(); }
+      function prevJobs(){ if(!jobs.length) return; carouselIndex = (carouselIndex - jobsPerView + jobs.length) % jobs.length; renderCarousel(); restartCarouselTimer(); }
+      function startCarousel(){ stopCarousel(); carouselTimer = setInterval(nextJobs, carouselInterval); }
+      function stopCarousel(){ if(carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; } }
+      function restartCarouselTimer(){ stopCarousel(); startCarousel(); }
+
+      // Show friendly error in loadingMsg area
+      function showLoadingMessage(msg, isError=false){
+        if(!loadingMsg) return;
+        loadingMsg.style.display = 'block';
+        loadingMsg.style.color = isError ? '#c0392b' : '#888';
+        loadingMsg.textContent = msg;
+      }
+      function hideLoadingMessage(){
+        if(!loadingMsg) return;
+        loadingMsg.style.display = 'none';
+      }
+
+      // Fetch jobs with retry + fallback
+      async function fetchJobsWithRetries(retries = FETCH_RETRIES) {
+        const url = buildApiUrl();
+        for(let attempt=0; attempt<=retries; attempt++){
+          try{
+            showLoadingMessage('Loading jobs…');
+            const resp = await fetch(url, { cache: "no-store" });
+            if(!resp.ok){
+              // Try to read response body for debug
+              const txt = await resp.text().catch(()=>"(no body)");
+              const message = `Job API error ${resp.status} ${resp.statusText}: ${txt.substring(0,240)}`;
+              console.warn(message);
+              if(attempt < retries){
+                await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+                continue;
+              } else {
+                throw new Error(message);
+              }
+            }
+            const data = await resp.json();
+            const results = (data && data.results) ? data.results.slice(0, MAX_JOBS) : [];
+            jobs = results;
+            carouselIndex = 0;
+            renderCarousel();
+            hideLoadingMessage();
+            startCarousel();
+            return;
+          } catch (err) {
+            console.error("fetchJobs attempt", attempt, err);
+            if(attempt < retries){
+              // continue to retry
+              await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+              continue;
+            } else {
+              // final failure - show fallback jobs and display the error message
+              jobs = FALLBACK_JOBS.slice(0, MAX_JOBS);
+              carouselIndex = 0;
+              renderCarousel();
+              showLoadingMessage('Unable to load live jobs — showing example roles. (' + (err && err.message ? err.message : 'unknown error') + ')', true);
+              startCarousel();
+              return;
+            }
+          }
+        }
+      }
+
+      // Coach modal
+      function openCoachModal(key){
+        const d = coaches[key];
+        if(!d) return;
+        lastFocusedElement = document.activeElement;
+        modalTitle.textContent = d.name;
+        coachImage.src = d.img || '';
+        coachImage.alt = d.name;
+        coachRole.textContent = d.role || '';
+        coachEmail.textContent = d.email ? ('Email: ' + d.email) : 'Email: Not provided';
+        coachPhone.textContent = d.phone ? ('Phone: ' + d.phone) : 'Phone: Not provided';
+        coachQuote.textContent = d.quote ? ('"' + d.quote + '"') : '';
+        contactEmailLink.href = 'mailto:' + encodeURIComponent(d.email || '');
+        if(d.phone && d.phone.trim()){
+          callLink.href = 'tel:' + d.phone.replace(/\s+/g,'');
+          callLink.style.display='';
+        } else { callLink.style.display='none' }
+        coachModalOverlay.classList.add('open');
+        coachModalOverlay.setAttribute('aria-hidden','false');
+        stopCarousel();
+        // focus close for accessibility
+        setTimeout(()=> modalCloseBtn.focus(), 60);
+      }
+      function closeCoachModal(){
+        coachModalOverlay.classList.remove('open');
+        coachModalOverlay.setAttribute('aria-hidden','true');
+        try{ if(lastFocusedElement) lastFocusedElement.focus(); } catch(e){}
+        startCarousel();
+      }
+
+      // Attach avatar handlers
+      function attachAvatarHandlers() {
+        qsa('.pic-box').forEach(el=>{
+          el.removeEventListener('click', el._clickHandler);
+          el._clickHandler = function () { openCoachModal(el.getAttribute('data-coach')); };
+          el.addEventListener('click', el._clickHandler);
+          el.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); openCoachModal(el.getAttribute('data-coach')); }});
+        });
+      }
+
+      // Search helpers
+      function buildSearchUrl(q){ return buildApiUrl({ what: q }); }
+      async function performKeywordSearch(q){
+        if(!q) return;
+        searchTermLabel.textContent = q;
+        searchCountLabel.textContent = 'Searching…';
+        searchResultsList.innerHTML = '<li style="padding:12px;color:#666">Searching…</li>';
+        searchModalOverlay.classList.add('open');
+        searchModalOverlay.setAttribute('aria-hidden','false');
+        stopCarousel();
+        try{
+          const url = buildSearchUrl(q);
+          const resp = await fetch(url);
+          if(!resp.ok) throw new Error(`Search API ${resp.status} ${resp.statusText}`);
+          const data = await resp.json();
+          const res = (data.results||[]).slice(0,MAX_JOBS);
+          renderSearchResults(res);
+        } catch (err) {
+          console.error(err);
+          searchResultsList.innerHTML = '<li style="padding:12px;color:#c0392b">Search failed. Try again.</li>';
+          searchCountLabel.textContent = '0 results';
+        }
+      }
+      function renderSearchResults(results){
+        const count = (results && results.length) || 0;
+        searchCountLabel.textContent = `${count} result${count===1?'':'s'}`;
+        if(!count){ searchResultsList.innerHTML = '<li style="padding:12px;color:#666">No jobs found.</li>'; return }
+        searchResultsList.innerHTML = '';
+        results.forEach(j=>{
+          const li = document.createElement('li');
+          li.className = 'search-item';
+          const title = escapeHtml(j.title||'Untitled');
+          const company = escapeHtml(j.company?.display_name||'Unknown');
+          const loc = escapeHtml(j.location?.display_name||'Location');
+          const currency = (j.salary_currency||'£').replace('GBP','£').replace('USD','$').replace('EUR','€');
+          const salary = formatSalary(j.salary_min, j.salary_max, currency);
+          const desc = firstSentences(j.description,2);
+          const link = j.redirect_url || '#';
+          li.innerHTML = `<div style="display:flex;flex-direction:column">
+            <div class="s-title" style="font-weight:800;color:var(--pink);margin-bottom:6px"><a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${title}</a></div>
+            <div class="search-meta">${company} — ${loc} — <strong style="color:var(--pink)">${salary}</strong></div>
+            <div style="margin-top:8px;color:#444">${desc}</div>
+            <div style="margin-top:10px;display:flex;gap:8px;">
+              <a class="s-open" href="${link}" target="_blank" rel="noopener" style="background:#fff;border:1px solid var(--pink);color:var(--pink);padding:8px 10px;border-radius:8px;font-weight:800;text-decoration:none">Open</a>
+              <a class="s-newtab" href="${link}" target="_blank" rel="noopener" style="background:var(--pink);color:#fff;padding:8px 10px;border-radius:8px;text-decoration:none;font-weight:800">New Tab</a>
+            </div>
+          </div>`;
+          searchResultsList.appendChild(li);
+        });
+      }
+
+      // Finance modal
+      function openFinanceModal() {
+        financeModalOverlay.classList.add('open');
+        financeModalOverlay.setAttribute('aria-hidden','false');
+        stopCarousel();
+      }
+      function closeFinanceModal() {
+        financeModalOverlay.classList.remove('open');
+        financeModalOverlay.setAttribute('aria-hidden','true');
+        startCarousel();
+      }
+
+      // Event wiring
+      function wireEvents() {
+        if(jobSearchBtn) jobSearchBtn.addEventListener('click', ()=>{ const v = jobSearchInput.value.trim(); if(!v) { jobSearchInput.focus(); return } performKeywordSearch(v) });
+        if(jobSearchInput) jobSearchInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); jobSearchBtn.click(); }});
+        if(prevBtn) prevBtn.addEventListener('click', prevJobs);
+        if(nextBtn) nextBtn.addEventListener('click', nextJobs);
+
+        if(modalCloseBtn) modalCloseBtn.addEventListener('click', closeCoachModal);
+        if(modalCloseSecondary) modalCloseSecondary.addEventListener('click', closeCoachModal);
+        if(coachModalOverlay) coachModalOverlay.addEventListener('click', (e)=>{ if(e.target===coachModalOverlay) closeCoachModal(); });
+
+        if(searchModalClose) searchModalClose.addEventListener('click', ()=>{ searchModalOverlay.classList.remove('open'); searchModalOverlay.setAttribute('aria-hidden','true'); startCarousel(); });
+        if(searchCloseBtn) searchCloseBtn.addEventListener('click', ()=>{ searchModalOverlay.classList.remove('open'); searchModalOverlay.setAttribute('aria-hidden','true'); startCarousel(); });
+        if(searchModalOverlay) searchModalOverlay.addEventListener('click', (e)=>{ if(e.target===searchModalOverlay) { searchModalOverlay.classList.remove('open'); searchModalOverlay.setAttribute('aria-hidden','true'); startCarousel(); }});
+
+        const financesBtn = document.getElementById('action-finances');
+        if(financesBtn) financesBtn.addEventListener('click', openFinanceModal);
+        if(financeProceed) financeProceed.addEventListener('click', ()=>{ closeFinanceModal(); window.open(financeUrl,'_blank','noopener'); });
+        if(financeDismiss) financeDismiss.addEventListener('click', closeFinanceModal);
+        if(financeModalClose) financeModalClose.addEventListener('click', closeFinanceModal);
+        if(financeModalOverlay) financeModalOverlay.addEventListener('click', (e)=>{ if(e.target===financeModalOverlay) closeFinanceModal(); });
+
+        const coursesBtn = document.getElementById('action-courses');
+        if(coursesBtn) coursesBtn.addEventListener('click', e=>{ e.preventDefault(); alert('Courses coming soon.'); });
+      }
+
+      // Viewport handling
+      function applyViewportSettings(m) {
+        const isMobile = (typeof m === 'object' && 'matches' in m) ? m.matches : (window.matchMedia && window.matchMedia('(max-width: 920px)').matches);
+        if (isMobile) {
+          jobsPerView = JOBS_PER_VIEW_MOBILE;
+          carouselInterval = CAROUSEL_INTERVAL_MOBILE;
+          document.body.classList.add('mobile');
+        } else {
+          jobsPerView = JOBS_PER_VIEW_DESKTOP;
+          carouselInterval = CAROUSEL_INTERVAL_DESKTOP;
+          document.body.classList.remove('mobile');
+        }
+        try {
+          const boxes = qsa('.avatars-wrapper .pic-box');
+          if (document.body.classList.contains('mobile')) {
+            const desired = 210;
+            boxes.forEach(b => {
+              b.style.minHeight = desired + 'px';
+              const img = b.querySelector('img');
+              if (img) { img.style.width = '110px'; img.style.height = '110px'; img.style.objectFit = 'cover'; }
+            });
+          } else {
+            boxes.forEach(b => {
+              b.style.minHeight = '';
+              const img = b.querySelector('img');
+              if (img) { img.style.width = ''; img.style.height = ''; img.style.objectFit = 'contain'; }
+            });
+          }
+        } catch (e) { /* ignore */ }
+        renderCarousel();
+        restartCarouselTimer();
+      }
+
+      // Safe matchMedia
+      function safeAddMediaListener(mql, handler) {
+        try {
+          if (!mql) return;
+          if (typeof mql.addEventListener === 'function') mql.addEventListener('change', handler);
+          else if (typeof mql.addListener === 'function') mql.addListener(handler);
+          else {
+            var last = mql.matches;
+            setInterval(function(){ if (mql.matches !== last) { last = mql.matches; try { handler.call(mql,{matches:mql.matches}); } catch(e){} } }, 500);
+          }
+        } catch(e){}
+      }
+
+      // Init
+      (function init(){
+        wireEvents();
+        attachAvatarHandlers();
+        // set up responsive listener
+        try {
+          var mql = window.matchMedia && window.matchMedia('(max-width:920px)');
+          if (mql) {
+            safeAddMediaListener(mql, applyViewportSettings);
+            applyViewportSettings(mql);
+          } else {
+            applyViewportSettings();
+          }
+        } catch(e){ applyViewportSettings(); }
+
+        // Fetch jobs with retries and graceful fallback
+        fetchJobsWithRetries();
+
+        // auto-refresh in background (5 mins)
+        if(refreshTimer) clearInterval(refreshTimer);
+        refreshTimer = setInterval(()=> fetchJobsWithRetries(), 5*60*1000);
+      })();
+
+      // Accessibility: Escape closes modals (global)
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (searchModalOverlay.classList.contains('open')) { searchModalOverlay.classList.remove('open'); searchModalOverlay.setAttribute('aria-hidden','true'); startCarousel(); }
+          if (coachModalOverlay.classList.contains('open')) closeCoachModal();
+          if (financeModalOverlay.classList.contains('open')) closeFinanceModal();
+        }
+      });
+
+      // Expose a small debug helper on window for manual troubleshooting
+      window.__restartHubDebug = {
+        fetchJobsWithRetries,
+        renderCarousel,
+        getJobs: ()=> jobs,
+        setJobs: (arr)=> { jobs = arr; renderCarousel(); }
+      };
+
+    })();
+  </script>
+</body>
+</html>
